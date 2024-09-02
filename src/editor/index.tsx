@@ -2,7 +2,7 @@ import { Allotment } from 'allotment';
 import 'allotment/dist/style.css';
 import { Header } from './components/Header';
 // 画布区
-import { EditArea } from './components/EditArea';
+import { EditArea } from './components/EditArea/EditArea';
 // 属性编辑区
 import { Setting } from './components/Setting';
 // 物料区

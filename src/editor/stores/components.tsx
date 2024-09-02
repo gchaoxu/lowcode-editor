@@ -50,15 +50,10 @@ export const useComponetsStore = create<State & Action>((set, get) => ({
 
     const component = getComponentById(componentId, get().components);
     if (component?.parentId) {
-      const parentComponent = getComponentById(
-        component.parentId,
-        get().components
-      );
+      const parentComponent = getComponentById(component.parentId, get().components);
 
       if (parentComponent) {
-        parentComponent.children = parentComponent?.children?.filter(
-          (item) => item.id !== +componentId
-        );
+        parentComponent.children = parentComponent?.children?.filter((item) => item.id !== +componentId);
 
         set({ components: [...get().components] });
       }
@@ -77,10 +72,7 @@ export const useComponetsStore = create<State & Action>((set, get) => ({
     }),
 }));
 
-export function getComponentById(
-  id: number | null,
-  components: Component[]
-): Component | null {
+export function getComponentById(id: number | null, components: Component[]): Component | null {
   if (!id) return null;
 
   for (const component of components) {
