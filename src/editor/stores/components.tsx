@@ -4,18 +4,22 @@ export interface Component {
   id: number;
   name: string;
   props: any;
+  desc: string;
   children?: Component[];
   parentId?: number;
 }
 
 interface State {
   components: Component[];
+  curComponentId?: number | null;
+  curComponent: Component | null;
 }
 
 interface Action {
   addComponent: (component: Component, parentId?: number) => void;
   deleteComponent: (componentId: number) => void;
   updateComponentProps: (componentId: number, props: any) => void;
+  setCurComponentId: (componentId: number | null) => void;
 }
 
 export const useComponetsStore = create<State & Action>((set, get) => ({
@@ -27,6 +31,14 @@ export const useComponetsStore = create<State & Action>((set, get) => ({
       desc: '页面',
     },
   ],
+  curComponentId: null,
+  curComponent: null,
+  setCurComponentId: (componentId) =>
+    set((state) => ({
+      curComponentId: componentId,
+      curComponent: getComponentById(componentId, state.components),
+    })),
+
   addComponent: (component, parentId) =>
     set((state) => {
       if (parentId) {
@@ -50,10 +62,15 @@ export const useComponetsStore = create<State & Action>((set, get) => ({
 
     const component = getComponentById(componentId, get().components);
     if (component?.parentId) {
-      const parentComponent = getComponentById(component.parentId, get().components);
+      const parentComponent = getComponentById(
+        component.parentId,
+        get().components
+      );
 
       if (parentComponent) {
-        parentComponent.children = parentComponent?.children?.filter((item) => item.id !== +componentId);
+        parentComponent.children = parentComponent?.children?.filter(
+          (item) => item.id !== +componentId
+        );
 
         set({ components: [...get().components] });
       }
@@ -72,7 +89,10 @@ export const useComponetsStore = create<State & Action>((set, get) => ({
     }),
 }));
 
-export function getComponentById(id: number | null, components: Component[]): Component | null {
+export function getComponentById(
+  id: number | null,
+  components: Component[]
+): Component | null {
   if (!id) return null;
 
   for (const component of components) {

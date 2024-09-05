@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { getComponentById, useComponetsStore } from '../../stores/components';
-import { Dropdown, Popconfirm, Space } from 'antd';
+import { Popconfirm, Space, Dropdown } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 
 interface SelectedMaskProps {
@@ -37,11 +37,20 @@ function SelectedMask({
   }, [componentId]);
 
   useEffect(() => {
-    setTimeout(() => {
-      updatePosition();
-    }, 200);
+    updatePosition();
   }, [components]);
 
+  useEffect(() => {
+    const resizeHandler = () => {
+      updatePosition();
+    };
+    window.addEventListener('resize', resizeHandler);
+    return () => {
+      window.removeEventListener('resize', resizeHandler);
+    };
+  }, []);
+
+  // 计算位置
   function updatePosition() {
     if (!componentId) return;
 
@@ -64,7 +73,7 @@ function SelectedMask({
 
     setPosition({
       top: top - containerTop + container.scrollTop,
-      left: left - containerLeft + container.scrollTop,
+      left: left - containerLeft + container.scrollLeft,
       width,
       height,
       labelTop,
@@ -72,6 +81,7 @@ function SelectedMask({
     });
   }
 
+  //获取 Select Mask 渲染的父组件
   const el = useMemo(() => {
     return document.querySelector(`.${portalWrapperClassName}`)!;
   }, []);
@@ -85,6 +95,7 @@ function SelectedMask({
     setCurComponentId(null);
   }
 
+  // 获取当前组件的所有父组件
   const parentComponents = useMemo(() => {
     const parentComponents = [];
     let component = curComponent;
