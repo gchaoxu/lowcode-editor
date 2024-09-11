@@ -3,8 +3,7 @@ import { message } from 'antd';
 import { useComponentConfigStore } from '../../stores/component-config';
 import { Component, useComponetsStore } from '../../stores/components';
 
-import { GoToLinkConfig } from '../Setting/actions/GoToLink';
-import { ShowMessageConfig } from '../Setting/actions/ShowMessage';
+import { ActionConfig } from '../Setting/ActionModal';
 
 export function Preview() {
   const { components } = useComponetsStore();
@@ -18,19 +17,26 @@ export function Preview() {
 
       if (eventConfig) {
         props[event.name] = () => {
-          eventConfig?.actions?.forEach(
-            (action: GoToLinkConfig | ShowMessageConfig) => {
-              if (action.type === 'goToLink') {
-                window.location.href = action.url;
-              } else if (action.type === 'showMessage') {
-                if (action.config.type === 'success') {
-                  message.success(action.config.text);
-                } else if (action.config.type === 'error') {
-                  message.error(action.config.text);
-                }
+          eventConfig?.actions?.forEach((action: ActionConfig) => {
+            if (action.type === 'goToLink') {
+              window.location.href = action.url;
+            } else if (action.type === 'showMessage') {
+              if (action.config.type === 'success') {
+                message.success(action.config.text);
+              } else if (action.config.type === 'error') {
+                message.error(action.config.text);
               }
+            } else if (action.type === 'customJS') {
+              const func = new Function('context', action.code);
+              func({
+                name: component.name,
+                props: component.props,
+                showMessage(content: string) {
+                  message.success(content);
+                },
+              });
             }
-          );
+          });
         };
       }
     });
