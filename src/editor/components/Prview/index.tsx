@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { message } from 'antd';
 import { useComponentConfigStore } from '../../stores/component-config';
 import { Component, useComponetsStore } from '../../stores/components';
@@ -9,6 +9,9 @@ export function Preview() {
   const { components } = useComponetsStore();
   const { componentConfig } = useComponentConfigStore();
 
+  const componentRefs = useRef<Record<string, any>>({});
+
+  // 将绑定的事件，通过 props 传给组件
   function handleEvent(component: Component) {
     const props: Record<string, any> = {};
 
@@ -35,6 +38,13 @@ export function Preview() {
                   message.success(content);
                 },
               });
+            } else if (action.type === 'componentMethod') {
+              const component =
+                componentRefs.current[action.config.componentId];
+
+              if (component) {
+                component[action.config.method]?.();
+              }
             }
           });
         };
@@ -58,6 +68,12 @@ export function Preview() {
           id: component.id,
           name: component.name,
           styles: component.styles,
+          ref:
+            config.prod?.$$typeof === Symbol.for('react.forward_ref')
+              ? (ref: Record<string, any>) => {
+                  componentRefs.current[component.id] = ref;
+                }
+              : undefined,
           ...config.defaultProps,
           ...component.props,
           ...handleEvent(component),

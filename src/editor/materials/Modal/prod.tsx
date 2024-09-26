@@ -12,7 +12,7 @@ const Modal: React.ForwardRefRenderFunction<
   ModalRef,
   Omit<CommonComponentProps, 'ref'>
 > = ({ children, title, onOk, onCancel, styles }, ref) => {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   useImperativeHandle(
     ref,
