@@ -18,11 +18,13 @@ export function ComponentStyle() {
   const [css, setCss] = useState<string>(`.comp{\n\n}`);
 
   useEffect(() => {
+    // 重置表单
     form.resetFields();
 
     const data = form.getFieldsValue();
     form.setFieldsValue({ ...data, ...curComponent?.styles });
 
+    // 重置 CSS 编辑器
     // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
     setCss(toCSSStr(curComponent?.styles!));
   }, [curComponent]);

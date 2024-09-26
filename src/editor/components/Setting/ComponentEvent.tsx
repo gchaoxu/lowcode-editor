@@ -62,6 +62,7 @@ export function ComponentEvent() {
           </Button>
         </div>
       ),
+      // 动作列表展示
       children: (
         <div>
           {(curComponent.props[event.name]?.actions || []).map(
@@ -165,10 +166,11 @@ export function ComponentEvent() {
   });
 
   function handleModalOk(config?: ActionConfig) {
+    console.log('config', config);
     if (!config || !curEvent || !curComponent) {
       return;
     }
-
+    // 编辑
     if (curAction) {
       updateComponentProps(curComponent.id, {
         [curEvent.name]: {
@@ -180,6 +182,7 @@ export function ComponentEvent() {
         },
       });
     } else {
+      // 新增
       updateComponentProps(curComponent.id, {
         [curEvent.name]: {
           actions: [
