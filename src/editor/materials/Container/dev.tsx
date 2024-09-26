@@ -5,7 +5,7 @@ import { CommonComponentProps } from '../../interface';
 
 const Container = ({ id, name, styles, children }: CommonComponentProps) => {
   const divRef = useRef<HTMLDivElement>(null);
-  const { canDrop, drop } = useMaterailDrop(['Button', 'Container', 'Modal', 'Table'], id);
+  const { canDrop, drop } = useMaterailDrop(['Button', 'Container', 'Modal', 'Table', 'Form'], id);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, drag] = useDrag({

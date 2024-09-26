@@ -1,5 +1,6 @@
 import { CSSProperties } from 'react';
-import { create } from 'zustand';
+import { create, StateCreator } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 export interface Component {
   id: number;
@@ -22,16 +23,12 @@ interface Action {
   addComponent: (component: Component, parentId?: number) => void;
   deleteComponent: (componentId: number) => void;
   updateComponentProps: (componentId: number, props: any) => void;
-  updateComponentStyles: (
-    componentId: number,
-    styles: CSSProperties,
-    replace?: boolean
-  ) => void;
+  updateComponentStyles: (componentId: number, styles: CSSProperties, replace?: boolean) => void;
   setCurComponentId: (componentId: number | null) => void;
   setMode: (mode: State['mode']) => void;
 }
 
-export const useComponetsStore = create<State & Action>((set, get) => ({
+const creator: StateCreator<State & Action> = (set, get) => ({
   components: [
     {
       id: 1,
@@ -73,15 +70,10 @@ export const useComponetsStore = create<State & Action>((set, get) => ({
 
     const component = getComponentById(componentId, get().components);
     if (component?.parentId) {
-      const parentComponent = getComponentById(
-        component.parentId,
-        get().components
-      );
+      const parentComponent = getComponentById(component.parentId, get().components);
 
       if (parentComponent) {
-        parentComponent.children = parentComponent?.children?.filter(
-          (item) => item.id !== +componentId
-        );
+        parentComponent.children = parentComponent?.children?.filter((item) => item.id !== +componentId);
 
         set({ components: [...get().components] });
       }
@@ -102,21 +94,18 @@ export const useComponetsStore = create<State & Action>((set, get) => ({
     set((state) => {
       const component = getComponentById(componentId, state.components);
       if (component) {
-        component.styles = replace
-          ? { ...styles }
-          : { ...component.styles, ...styles };
+        component.styles = replace ? { ...styles } : { ...component.styles, ...styles };
 
         return { components: [...state.components] };
       }
 
       return { components: [...state.components] };
     }),
-}));
+});
 
-export function getComponentById(
-  id: number | null,
-  components: Component[]
-): Component | null {
+export const useComponetsStore = create<State & Action>()(persist(creator, { name: 'xxx' }));
+
+export function getComponentById(id: number | null, components: Component[]): Component | null {
   if (!id) return null;
 
   for (const component of components) {
