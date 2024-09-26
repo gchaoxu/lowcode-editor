@@ -1,9 +1,20 @@
 import { Button as AntdButton } from 'antd';
+import { useDrag } from 'react-dnd';
 import { CommonComponentProps } from '../../interface';
 
 const Button = ({ id, type, text, styles }: CommonComponentProps) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, drag] = useDrag({
+    type: 'Button',
+    item: {
+      type: 'Button',
+      dragType: 'move',
+      id,
+    },
+  });
+
   return (
-    <AntdButton data-component-id={id} type={type} style={styles}>
+    <AntdButton ref={drag} data-component-id={id} type={type} style={styles}>
       {text}
     </AntdButton>
   );
